@@ -143,36 +143,19 @@ provider "azurerm" {
 }
 
 resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "test" {
-  name = "OFake%[2]d"
+  name = "CRDR-Instance-%[2]s"
 
-  display_name                     = "OFake%[2]d"
+  display_name                     = "CRDR-Replica-%[2]s"
   resource_group_name              = azurerm_resource_group.test.name
   location                         = "%[4]s"
   remote_disaster_recovery_type    = "Adg"
   database_type                    = "CrossRegionDisasterRecovery"
   source                           = "CrossRegionDisasterRecovery"
-  source_id      				   = "testSourceId"
+  source_id      				   = "/subscriptions/4aa7be2d-ffd6-4657-828b-31ca25e39985/resourceGroups/EF-Test-CRDR/providers/Oracle.Database/autonomousDatabases/EfTestOriginal"
   replicate_automatic_backups	   = true
-  source_ocid					   = "testSourceOcid"
   source_location				   = "%[3]s"
-  compute_model                    = "ECPU"
-  compute_count                    = 2
-  license_model                    = "BringYourOwnLicense"
-  backup_retention_period_in_days  = 12
-  auto_scaling_enabled             = false
-  auto_scaling_for_storage_enabled = false
-  mtls_connection_required         = false
-  data_storage_size_in_tbs         = 1
-  db_workload                      = "OLTP"
-  admin_password                   = "TestPass#2024#"
-  db_version                       = "19c"
-  character_set                    = "AL32UTF8"
-  national_character_set           = "AL16UTF16"
-  subnet_id                        = azurerm_subnet.test.id
-  virtual_network_id               = azurerm_virtual_network.test.id
-  customer_contacts                = ["test@test.com"]
 }
-`, a.template(data), data.RandomInteger, data.Locations.Primary, data.Locations.Secondary)
+`, a.template(data), "EF-Test-CRDR", "eastus", "germanywestcentral")
 }
 
 func (a AdbsCrossRegionDisasterRecoveryResource) update(data acceptance.TestData) string {
@@ -185,34 +168,22 @@ provider "azurerm" {
 }
 
 resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "test" {
-  name                             = "OFake%[2]d"
-  display_name                     = "OFake%[2]d"
+  name = "CRDR-Instance-%[2]s"
+
+  display_name                     = "CRDR-Replica-%[2]s"
   resource_group_name              = azurerm_resource_group.test.name
   location                         = "%[4]s"
   remote_disaster_recovery_type    = "BackupBased"
   database_type                    = "CrossRegionDisasterRecovery"
   source                           = "BackupFromTimestamp"
-  source_id      				   = "testSourceId2"
-  replicate_automatic_backups	   = false
+  source_id      				   = "/subscriptions/4aa7be2d-ffd6-4657-828b-31ca25e39985/resourceGroups/EF-Test-CRDR/providers/Oracle.Database/autonomousDatabases/EfTestOriginal"
+  replicate_automatic_backups	   = false -- CHECK If TEST CHANGES IT
   source_ocid					   = "testSourceOcid2"
   source_location				   = "%[3]s"
-  compute_model                    = "ECPU"
-  compute_count                    = 3
-  license_model                    = "LicenseIncluded"
-  backup_retention_period_in_days  = 12
-  auto_scaling_enabled             = false
-  auto_scaling_for_storage_enabled = false
-  mtls_connection_required         = false
-  data_storage_size_in_tbs         = 1
-  db_workload                      = "OLTP"
-  admin_password                   = "TestPass#2024#"
-  db_version                       = "19c"
-  character_set                    = "AL32UTF8"
-  national_character_set           = "AL16UTF16"
   subnet_id                        = azurerm_subnet.test.id
   virtual_network_id               = azurerm_virtual_network.test.id
 }
-`, a.template(data), data.RandomInteger, data.Locations.Secondary, data.Locations.Ternary)
+`, a.template(data), "EF-Test-CRDR", "eastus", "germanywestcentral")
 }
 
 func (a AdbsCrossRegionDisasterRecoveryResource) requiresImport(data acceptance.TestData) string {
@@ -256,19 +227,19 @@ func (a AdbsCrossRegionDisasterRecoveryResource) template(data acceptance.TestDa
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "test" {
-  name     = "acctestRG-%[1]d"
-  location = "%[2]s"
+  name     = "%[1]s"
+  location = "%[3]s"
 }
 
 resource "azurerm_virtual_network" "test" {
-  name                = "acctest%[1]d_vnet"
+  name                = "acctest%[1]s_vnet"
   address_space       = ["10.0.0.0/16"]
-  location            = "%[2]s"
+  location            = "%[3]s"
   resource_group_name = azurerm_resource_group.test.name
 }
 
 resource "azurerm_subnet" "test" {
-  name                 = "eacctest%[1]d"
+  name                 = "eacctest%[1]s"
   resource_group_name  = azurerm_resource_group.test.name
   virtual_network_name = azurerm_virtual_network.test.name
   address_prefixes     = ["10.0.1.0/24"]
@@ -286,5 +257,5 @@ resource "azurerm_subnet" "test" {
   }
 }
 
-`, data.RandomInteger, data.Locations.Primary, data.RandomString)
+`, "EF-Test-CRDR", "eastus", "germanywestcentral")
 }

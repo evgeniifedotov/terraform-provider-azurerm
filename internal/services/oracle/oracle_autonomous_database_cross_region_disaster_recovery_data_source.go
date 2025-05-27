@@ -44,6 +44,7 @@ type AutonomousDatabaseCrossRegionDisasterRecoveryDataModel struct {
 	CharacterSet                            string   `tfschema:"character_set"`
 	ComputeCount                            float64  `tfschema:"compute_count"`
 	CpuCoreCount                            int64    `tfschema:"cpu_core_count"`
+	DataBaseType                            string   `tfschema:"data_base_type"`
 	DataStorageSizeInGbs                    int64    `tfschema:"data_storage_size_in_gbs"`
 	DataStorageSizeInTbs                    int64    `tfschema:"data_storage_size_in_tbs"`
 	DbVersion                               string   `tfschema:"db_version"`
@@ -111,6 +112,10 @@ func (d AutonomousDatabaseCrossRegionDisasterRecoveryDataSource) Attributes() ma
 			Computed: true,
 		},
 		"replicate_automatic_backups": {
+			Type:     pluginsdk.TypeBool,
+			Computed: true,
+		},
+		"database_type": {
 			Type:     pluginsdk.TypeBool,
 			Computed: true,
 		},
@@ -466,6 +471,7 @@ func (d AutonomousDatabaseCrossRegionDisasterRecoveryDataSource) Read() sdk.Reso
 
 				state.IsReplicateAutomaticBackups = pointer.From(adbsProps.IsReplicateAutomaticBackups)
 				state.RemoteDisasterRecoveryType = string(adbsProps.RemoteDisasterRecoveryType)
+				state.DataBaseType = string(adbsProps.DataBaseType)
 				state.Source = string(adbsProps.Source)
 				state.SourceId = adbsProps.SourceId
 				state.SourceLocation = pointer.From(adbsProps.SourceLocation)

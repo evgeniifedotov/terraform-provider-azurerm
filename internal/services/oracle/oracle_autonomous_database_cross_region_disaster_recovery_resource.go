@@ -78,7 +78,7 @@ func (AutonomousDatabaseCrossRegionDisasterRecoveryResource) Arguments() map[str
 			Type:         pluginsdk.TypeString,
 			Required:     true,
 			ForceNew:     true,
-			ValidateFunc: validate.DisasterRecoveryType,
+			ValidateFunc: validate.DatabaseType,
 		},
 		"remote_disaster_recovery_type": {
 			Type:         pluginsdk.TypeString,
@@ -403,6 +403,7 @@ func (AutonomousDatabaseCrossRegionDisasterRecoveryResource) Read() sdk.Resource
 				state.RemoteDisasterRecoveryType = string(props.RemoteDisasterRecoveryType)
 				state.Source = string(props.Source)
 				state.SourceId = props.SourceId
+				state.DatabaseType = string(props.DataBaseType)
 				state.SourceLocation = pointer.From(props.SourceLocation)
 				state.SourceOcid = pointer.From(props.SourceOcid)
 				state.AdminPassword = metadata.ResourceData.Get("admin_password").(string)

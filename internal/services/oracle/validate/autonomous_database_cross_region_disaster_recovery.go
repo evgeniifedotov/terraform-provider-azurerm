@@ -33,3 +33,16 @@ func DisasterRecoveryType(i interface{}, k string) (warnings []string, errors []
 
 	return []string{}, []error{}
 }
+
+func DatabaseType(i interface{}, k string) (warnings []string, errors []error) {
+	v, ok := i.(string)
+	if !ok {
+		return []string{}, append(errors, fmt.Errorf("expected type of %s to be string", k))
+	}
+
+	if v != string(autonomousdatabases.DataBaseTypeClone) && v != string(autonomousdatabases.DataBaseTypeCloneFromBackupTimestamp) && v != string(autonomousdatabases.DataBaseTypeCrossRegionDisasterRecovery) && v != string(autonomousdatabases.DataBaseTypeRegular) {
+		return []string{}, append(errors, fmt.Errorf("%v must be %v or %v", k, string(autonomousdatabases.DataBaseTypeClone), string(autonomousdatabases.DataBaseTypeCloneFromBackupTimestamp), string(autonomousdatabases.DataBaseTypeCrossRegionDisasterRecovery), string(autonomousdatabases.DataBaseTypeRegular)))
+	}
+
+	return []string{}, []error{}
+}
