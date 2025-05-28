@@ -29,20 +29,6 @@ func (a AdbsCrossRegionDisasterRecoveryResource) Exists(ctx context.Context, cli
 	return pointer.To(resp.Model != nil), nil
 }
 
-func TestAdbsCrossRegionDisasterRecoveryResource_basic(t *testing.T) {
-	data := acceptance.BuildTestData(t, oracle.AutonomousDatabaseCrossRegionDisasterRecoveryResource{}.ResourceType(), "test")
-	r := AdbsCrossRegionDisasterRecoveryResource{}
-	data.ResourceTest(t, r, []acceptance.TestStep{
-		{
-			Config: r.basic(data),
-			Check: acceptance.ComposeTestCheckFunc(
-				check.That(data.ResourceName).ExistsInAzure(r),
-			),
-		},
-		data.ImportStep("admin_password"),
-	})
-}
-
 func TestAdbsCrossRegionDisasterRecoveryResource_complete(t *testing.T) {
 	data := acceptance.BuildTestData(t, oracle.AutonomousDatabaseCrossRegionDisasterRecoveryResource{}.ResourceType(), "test")
 	r := AdbsCrossRegionDisasterRecoveryResource{}
@@ -62,7 +48,7 @@ func TestAdbsCrossRegionDisasterRecoveryResource_update(t *testing.T) {
 	r := AdbsCrossRegionDisasterRecoveryResource{}
 	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
-			Config: r.basic(data),
+			Config: r.complete(data),
 			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 			),
@@ -83,54 +69,13 @@ func TestAdbsCrossRegionDisasterRecoveryResource_requiresImport(t *testing.T) {
 	r := AdbsCrossRegionDisasterRecoveryResource{}
 	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
-			Config: r.basic(data),
+			Config: r.complete(data),
 			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 			),
 		},
 		data.RequiresImportErrorStep(r.requiresImport),
 	})
-}
-
-func (a AdbsCrossRegionDisasterRecoveryResource) basic(data acceptance.TestData) string {
-	return fmt.Sprintf(`
-
-
-%s
-
-provider "azurerm" {
-  features {}
-}
-
-resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "test" {
-  name                             = "OFake%[2]d"
-  display_name                     = "OFake%[2]d"
-  resource_group_name              = azurerm_resource_group.test.name
-  location                         = "%[4]s"
-  remote_disaster_recovery_type    = "Adg"
-  database_type                    = "CrossRegionDisasterRecovery"
-  source                           = "CrossRegionDisasterRecovery"
-  source_id    				       = "testSourceId"
-  replicate_automatic_backups	   = true
-  source_ocid					   = "testSourceOcid"
-  source_location				   = "%[3]s"
-  compute_model                    = "ECPU"
-  compute_count                    = 2
-  license_model                    = "BringYourOwnLicense"
-  backup_retention_period_in_days  = 12
-  auto_scaling_enabled             = false
-  auto_scaling_for_storage_enabled = false
-  mtls_connection_required         = false
-  data_storage_size_in_tbs         = 1
-  db_workload                      = "OLTP"
-  admin_password                   = "TestPass#2024#"
-  db_version                       = "19c"
-  character_set                    = "AL32UTF8"
-  national_character_set           = "AL16UTF16"
-  subnet_id                        = azurerm_subnet.test.id
-  virtual_network_id               = azurerm_virtual_network.test.id
-}
-`, a.template(data), data.RandomInteger, data.Locations.Primary, data.Locations.Secondary)
 }
 
 func (a AdbsCrossRegionDisasterRecoveryResource) complete(data acceptance.TestData) string {
@@ -143,10 +88,11 @@ provider "azurerm" {
 }
 
 resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "test" {
-  name = "CRDR-Instance-%[2]s"
+  
+  name = "CRDRInstanceForEfOriginTest"
 
-  display_name                     = "CRDR-Replica-%[2]s"
-  resource_group_name              = azurerm_resource_group.test.name
+  display_name                     = "CRDRInstanceForEfOriginTest"
+  resource_group_name              = "EF-Test-CRDR"
   location                         = "%[4]s"
   remote_disaster_recovery_type    = "Adg"
   database_type                    = "CrossRegionDisasterRecovery"
@@ -154,6 +100,22 @@ resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "te
   source_id      				   = "/subscriptions/4aa7be2d-ffd6-4657-828b-31ca25e39985/resourceGroups/EF-Test-CRDR/providers/Oracle.Database/autonomousDatabases/EfTestOriginal"
   replicate_automatic_backups	   = true
   source_location				   = "%[3]s"
+  license_model                    = "LicenseIncluded"
+  backup_retention_period_in_days  = 12
+  auto_scaling_enabled             = false
+  auto_scaling_for_storage_enabled = false
+  mtls_connection_required         = false
+  data_storage_size_in_tbs         = 1
+  compute_model                    = "ECPU"
+  compute_count                    = 3
+  db_workload                      = "DW"
+  admin_password                   = "TestPass#2024#"
+  db_version                       = "19c"
+  character_set                    = "AL32UTF8"
+  national_character_set           = "AL16UTF16"
+  subnet_id                        = azurerm_subnet.test.id
+  virtual_network_id               = azurerm_virtual_network.test.id
+  customer_contacts                = ["test@test.com"]
 }
 `, a.template(data), "EF-Test-CRDR", "eastus", "germanywestcentral")
 }
@@ -168,18 +130,32 @@ provider "azurerm" {
 }
 
 resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "test" {
-  name = "CRDR-Instance-%[2]s"
 
-  display_name                     = "CRDR-Replica-%[2]s"
-  resource_group_name              = azurerm_resource_group.test.name
+
+  name = "CRDRInstanceForEfOriginTest"
+
+  display_name                     = "CRDRInstanceForEfOriginTest"
+  resource_group_name              = "EF-Test-CRDR"
   location                         = "%[4]s"
   remote_disaster_recovery_type    = "BackupBased"
   database_type                    = "CrossRegionDisasterRecovery"
   source                           = "BackupFromTimestamp"
   source_id      				   = "/subscriptions/4aa7be2d-ffd6-4657-828b-31ca25e39985/resourceGroups/EF-Test-CRDR/providers/Oracle.Database/autonomousDatabases/EfTestOriginal"
-  replicate_automatic_backups	   = false -- CHECK If TEST CHANGES IT
-  source_ocid					   = "testSourceOcid2"
+  replicate_automatic_backups	   = false
   source_location				   = "%[3]s"
+  compute_model                    = "ECPU"
+  compute_count                    = 3
+  license_model                    = "LicenseIncluded"
+  backup_retention_period_in_days  = 12
+  auto_scaling_enabled             = false
+  auto_scaling_for_storage_enabled = false
+  mtls_connection_required         = false
+  data_storage_size_in_tbs         = 1
+  db_workload                      = "DW"
+  admin_password                   = "TestPass#2024#"
+  db_version                       = "19c"
+  character_set                    = "AL32UTF8"
+  national_character_set           = "AL16UTF16"
   subnet_id                        = azurerm_subnet.test.id
   virtual_network_id               = azurerm_virtual_network.test.id
 }
@@ -218,7 +194,7 @@ resource "azurerm_oracle_autonomous_database_cross_region_disaster_recovery" "im
   subnet_id                        = azurerm_oracle_autonomous_database_cross_region_disaster_recovery.test.subnet_id
   virtual_network_id               = azurerm_oracle_autonomous_database_cross_region_disaster_recovery.test.virtual_network_id
 }
-`, a.basic(data))
+`, a.complete(data))
 }
 
 func (a AdbsCrossRegionDisasterRecoveryResource) template(data acceptance.TestData) string {
