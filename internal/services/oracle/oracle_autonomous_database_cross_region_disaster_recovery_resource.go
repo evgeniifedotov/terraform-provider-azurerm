@@ -23,37 +23,33 @@ var _ sdk.Resource = AutonomousDatabaseCrossRegionDisasterRecoveryResource{}
 type AutonomousDatabaseCrossRegionDisasterRecoveryResource struct{}
 
 type AutonomousDatabaseCrossRegionDisasterRecoveryResourceModel struct {
-	Location                   string            `tfschema:"location"`
-	Name                       string            `tfschema:"name"`
-	ResourceGroupName          string            `tfschema:"resource_group_name"`
-	Tags                       map[string]string `tfschema:"tags"`
-	RemoteDisasterRecoveryType string            `tfschema:"remote_disaster_recovery_type"`
-	Source                     string            `tfschema:"source"`
-	SourceId                   string            `tfschema:"source_id"`
-	DatabaseType               string            `tfschema:"database_type"`
-	// Optional sourceOcid
-	IsReplicateAutomaticBackups bool   `tfschema:"replicate_automatic_backups"`
-	SourceOcid                  string `tfschema:"source_ocid"`
-	SourceLocation              string `tfschema:"source_location"`
-
-	// Required
-
-	AdminPassword                string  `tfschema:"admin_password"`
-	BackupRetentionPeriodInDays  int64   `tfschema:"backup_retention_period_in_days"`
-	CharacterSet                 string  `tfschema:"character_set"`
-	ComputeCount                 float64 `tfschema:"compute_count"`
-	ComputeModel                 string  `tfschema:"compute_model"`
-	DataStorageSizeInTbs         int64   `tfschema:"data_storage_size_in_tbs"`
-	DbVersion                    string  `tfschema:"db_version"`
-	DbWorkload                   string  `tfschema:"db_workload"`
-	DisplayName                  string  `tfschema:"display_name"`
-	LicenseModel                 string  `tfschema:"license_model"`
-	AutoScalingEnabled           bool    `tfschema:"auto_scaling_enabled"`
-	AutoScalingForStorageEnabled bool    `tfschema:"auto_scaling_for_storage_enabled"`
-	MtlsConnectionRequired       bool    `tfschema:"mtls_connection_required"`
-	NationalCharacterSet         string  `tfschema:"national_character_set"`
-	SubnetId                     string  `tfschema:"subnet_id"`
-	VnetId                       string  `tfschema:"virtual_network_id"`
+	Location                     string            `tfschema:"location"`
+	Name                         string            `tfschema:"name"`
+	ResourceGroupName            string            `tfschema:"resource_group_name"`
+	Tags                         map[string]string `tfschema:"tags"`
+	RemoteDisasterRecoveryType   string            `tfschema:"remote_disaster_recovery_type"`
+	Source                       string            `tfschema:"source"`
+	SourceId                     string            `tfschema:"source_id"`
+	DatabaseType                 string            `tfschema:"database_type"`
+	IsReplicateAutomaticBackups  bool              `tfschema:"replicate_automatic_backups"`
+	AdminPassword                string            `tfschema:"admin_password"`
+	AutoScalingEnabled           bool              `tfschema:"auto_scaling_enabled"`
+	AutoScalingForStorageEnabled bool              `tfschema:"auto_scaling_for_storage_enabled"`
+	BackupRetentionPeriodInDays  int64             `tfschema:"backup_retention_period_in_days"`
+	CharacterSet                 string            `tfschema:"character_set"`
+	ComputeCount                 float64           `tfschema:"compute_count"`
+	ComputeModel                 string            `tfschema:"compute_model"`
+	DataStorageSizeInTbs         int64             `tfschema:"data_storage_size_in_tbs"`
+	DbVersion                    string            `tfschema:"db_version"`
+	DbWorkload                   string            `tfschema:"db_workload"`
+	DisplayName                  string            `tfschema:"display_name"`
+	LicenseModel                 string            `tfschema:"license_model"`
+	MtlsConnectionRequired       bool              `tfschema:"mtls_connection_required"`
+	NationalCharacterSet         string            `tfschema:"national_character_set"`
+	SourceOcid                   string            `tfschema:"source_ocid"`
+	SourceLocation               string            `tfschema:"source_location"`
+	SubnetId                     string            `tfschema:"subnet_id"`
+	VnetId                       string            `tfschema:"virtual_network_id"`
 
 	// Optional
 	CustomerContacts []string `tfschema:"customer_contacts"`
@@ -412,13 +408,13 @@ func (AutonomousDatabaseCrossRegionDisasterRecoveryResource) Read() sdk.Resource
 				state.AutoScalingForStorageEnabled = pointer.From(props.IsAutoScalingForStorageEnabled)
 				state.CharacterSet = pointer.From(props.CharacterSet)
 				state.ComputeCount = pointer.From(props.ComputeCount)
-				state.ComputeModel = string(pointer.From(props.ComputeModel))
+				state.ComputeModel = pointer.FromEnum(props.ComputeModel)
 				state.CustomerContacts = flattenAdbsCustomerContacts25(props.CustomerContacts)
 				state.DataStorageSizeInTbs = pointer.From(props.DataStorageSizeInTbs)
-				state.DbWorkload = string(pointer.From(props.DbWorkload))
+				state.DbWorkload = pointer.FromEnum(props.DbWorkload)
 				state.DbVersion = pointer.From(props.DbVersion)
 				state.DisplayName = pointer.From(props.DisplayName)
-				state.LicenseModel = string(pointer.From(props.LicenseModel))
+				state.LicenseModel = pointer.FromEnum(props.LicenseModel)
 				state.Location = result.Model.Location
 				state.Name = pointer.ToString(result.Model.Name)
 				state.NationalCharacterSet = pointer.From(props.NcharacterSet)
