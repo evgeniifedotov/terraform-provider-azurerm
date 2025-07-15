@@ -22,7 +22,7 @@ func (a AdbsCrossRegionDisasterRecoveryResource) Exists(ctx context.Context, cli
 	if err != nil {
 		return nil, err
 	}
-	resp, err := client.Oracle.OracleClient25.AutonomousDatabases.Get(ctx, *id)
+	resp, err := client.Oracle.OracleClient.AutonomousDatabases.Get(ctx, *id)
 	if err != nil {
 		return nil, fmt.Errorf("retrieving adbs_crdr %s: %+v", id, err)
 	}

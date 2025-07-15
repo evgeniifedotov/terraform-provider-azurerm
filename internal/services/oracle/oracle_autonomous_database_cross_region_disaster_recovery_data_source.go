@@ -442,7 +442,7 @@ func (d AutonomousDatabaseCrossRegionDisasterRecoveryDataSource) Read() sdk.Reso
 	return sdk.ResourceFunc{
 		Timeout: 5 * time.Minute,
 		Func: func(ctx context.Context, metadata sdk.ResourceMetaData) error {
-			client := metadata.Client.Oracle.OracleClient25.AutonomousDatabases
+			client := metadata.Client.Oracle.OracleClient.AutonomousDatabases
 			subscriptionId := metadata.Client.Account.SubscriptionId
 
 			var state AutonomousDatabaseCrossRegionDisasterRecoveryDataModel
